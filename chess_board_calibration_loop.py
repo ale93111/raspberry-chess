@@ -1,21 +1,20 @@
 import cv2
 import time
 import numpy as np
-from skimage.transform import resize
+# from skimage.transform import resize
 
 from picamera2 import Picamera2
 
-#image_test = cv2.imread('/home/alessandro/Documents/code/test.png')
-image_ref  = cv2.imread('./chess_board_reference.png')
-height_ref, width_ref= image_ref.shape[:2]
-image_ref = (resize(image_ref, (480,640), anti_aliasing=True)*255).astype(np.uint8)
+perfect_corners = []
+for i in range(1,8):
+    for j in range(1,8):
+        bbox = [60*i, 60*j]
+        perfect_corners.append(bbox)
+        
+corners_ref = np.array(perfect_corners)
 
-image_ref_gray = cv2.cvtColor(image_ref, cv2.COLOR_BGR2GRAY)
+shape_ref = [480, 480] 
 
-ret, corners_ref = cv2.findChessboardCornersSB(image_ref_gray, (7, 7), cv2.CALIB_CB_EXHAUSTIVE)
-   
-
-print(image_ref.shape)
 
 picam2 = Picamera2()
 picam2.configure(picam2.create_preview_configuration(main={"format": 'XRGB8888', "size": (640, 480)}))
@@ -41,8 +40,10 @@ while True:
         height, width = image_test.shape[:2]
   
         transformed_img = cv2.warpPerspective(image_test, homography, (width, height))
+        
+        transformed_img = transformed_img[:shape_ref[0],:shape_ref[1]]
 
-    #transformed_img = transformed_img[:height_ref, :width_ref]
+
 
     fps = 1/(new_frame_time-prev_frame_time) 
     prev_frame_time = new_frame_time 
