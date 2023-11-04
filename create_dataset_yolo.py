@@ -27,17 +27,22 @@ def bboxes_from_chess_board(chess_board_position):
     bboxes = []
     for i in range(8):
         for j in range(8):
-            if chess_board_position[i][j] != '--':
-                bbox = [60*j+5, 60*i+5, 60*(j+1)-5, 60*(i+1)-5]
+            if chess_board_position[i][j].startswith('b'):
+                bbox = [1, 60*j+5, 60*i+5, 60*(j+1)-5, 60*(i+1)-5]
                 bboxes.append(bbox)
-                
+            elif chess_board_position[i][j].startswith('w'):
+                bbox = [0, 60*j+5, 60*i+5, 60*(j+1)-5, 60*(i+1)-5]
+                bboxes.append(bbox)
+            else:
+                continue
+                # bbox = [0, 60*j+5, 60*i+5, 60*(j+1)-5, 60*(i+1)-5]
+                # bboxes.append(bbox)
     return bboxes
 
 def bbox_to_yolobbox(bbox, image_w, image_h):
-    x1, y1, x2, y2 = bbox
-    return [((x2 + x1)/(2*image_w)), ((y2 + y1)/(2*image_h)), (x2 - x1)/image_w, (y2 - y1)/image_h]
+    class_id, x1, y1, x2, y2 = bbox
+    return [class_id, ((x2 + x1)/(2*image_w)), ((y2 + y1)/(2*image_h)), (x2 - x1)/image_w, (y2 - y1)/image_h]
 
-class_id = 0
 
 counter_image = 0
 
@@ -67,7 +72,7 @@ for subdirectory_path in subdirectories_path:
         
         cv2.imwrite(os.path.join(output_directory_images, str(counter_image)+'.png'), image)
         
-        labels = [f"{class_id} {bbox_yolo[0]} {bbox_yolo[1]} {bbox_yolo[2]} {bbox_yolo[3]}" for bbox_yolo in bboxes_yolo]
+        labels = [f"{bbox_yolo[0]} {bbox_yolo[1]} {bbox_yolo[2]} {bbox_yolo[3]} {bbox_yolo[4]}" for bbox_yolo in bboxes_yolo]
         labels = '\n'.join(labels)
 
         with open(os.path.join(output_directory_labels, str(counter_image)+".txt"),'w') as f:
