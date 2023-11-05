@@ -28,8 +28,10 @@ def calibrate_image(image_test_rgb, corners_ref, shape_ref, height, width):
         output_image = transformed_img[:shape_ref[0],:shape_ref[1]]
         
     else:
-        output_image = image_test
-        output_image = cv2.resize(output_image, shape_ref, interpolation = cv2.INTER_LINEAR)
+        output_image = None
+        # output_image = image_test_rgb
+        # output_image = cv2.resize(output_image, shape_ref, interpolation = cv2.INTER_LINEAR)
+        # output_image = cv2.cvtColor(output_image, cv2.COLOR_RGB2BGR)
  
     return ret_test, output_image
 
