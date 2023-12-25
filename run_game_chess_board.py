@@ -61,11 +61,23 @@ while True:
         move = ''
         if len(new_pos) > 0:
             old_pos = [center for center in old_centers if center not in new_centers]
-
+            
+            if len(old_pos) != len(new_pos):
+                continue
+         
             for i in range(len(new_pos)):
                 move += x_chess_board[int(old_pos[i][0]) - 1] + str(int(old_pos[i][1]))
                 move += x_chess_board[int(new_pos[i][0]) - 1] + str(int(new_pos[i][1]))
-        
+				
+            if "e1" in move and "g1" in move:
+                move = "e1g1"
+            if "e1" in move and "c1" in move:
+                move = "e1c1"
+            if "e8" in move and "g8" in move:
+                move = "e8g8"
+            if "e8" in move and "c8" in move:
+                move = "e8c8"
+                
             if chess.Move.from_uci(move) in board.legal_moves:
                 board.push_uci(move)
             else:
